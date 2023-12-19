@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: color-picker
+  labels:
+    app: color-picker
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: color-picker
+  template:
+    metadata:
+      labels:
+        app: color-picker
+    spec:
+      containers:
+        - name: colorpicker
+          image: orezfu/color-picker:v1
+          ports:
+            - containerPort: 80
