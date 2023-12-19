@@ -1,14 +1,10 @@
 provider "aws" {
   region = "us-east-1"
-  # access_key = "<your_access_key>"
-  # secret_key = "<your_secret_key>"
-  access_key = "AKIAWFGGBXVDJQTIMO66"
-  secret_key = "7YjmBSGAAmvgM757fCon4TwEqbHScR4QQrA6zYbp"
 }
 
 resource "aws_key_pair" "terraform_key" {
   key_name   = "terraform-demo"
-  public_key = file("files/terraform.pub")
+  public_key = file("files/terraform-key.pub")
 }
 
 resource "aws_instance" "jenkins_instance" {
