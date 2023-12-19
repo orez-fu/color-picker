@@ -42,7 +42,7 @@ pipeline {
       }
     }
 
-    stage ('Create docker images') {
+    stage ('Build and Publish docker images') {
       steps {
         script {
           unstash 'build'
@@ -51,8 +51,26 @@ pipeline {
         sh '''
           ls -al
           echo "Starting to build docker image"
-          docker build -t pick-color:v1 -f docker/Dockerfile .
+          docker build -t orezfu/color-picker:dev-${BUILD_NUMBER} -f docker/Dockerfile .
         '''
+        withCredentials([usernamePassword(credentialsId: 'docker_cred', usernameVariable: "DOCKER_USERNAME", passwordVariable: "DOCKER_PASSWORD")]) {
+          sh '''
+            echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME}
+            docker push orezfu/color-picker:dev-${BUILD_NUMBER}
+          '''
+        }
+      }
+    }
+
+    stage ('Deploy application') {
+      steps {
+        sh "echo 'Deploy to kubernetes'"
+        withKubeConfig([credentialsId: 'kubeconfig', serverUrl: 'https://<kubernetes_instance_public_ip>:6443']) {
+          sh """
+            kubectl apply -f manifests
+            kubectl set image deploy color-picker colorpicker=color-picker:dev-${BUILD_NUMBER}
+          """
+        }
       }
     }
   }
