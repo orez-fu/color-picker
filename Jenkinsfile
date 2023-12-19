@@ -54,10 +54,10 @@ pipeline {
           docker build -t orezfu/color-picker:dev-${BUILD_NUMBER} -f docker/Dockerfile .
         '''
         withCredentials([usernamePassword(credentialsId: 'docker_cred', usernameVariable: "DOCKER_USERNAME", passwordVariable: "DOCKER_PASSWORD")]) {
-          sh '''
-            echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME}
+          sh """
+            echo "${DOCKER_PASSWORD}" | docker login -u ${DOCKER_USERNAME}
             docker push orezfu/color-picker:dev-${BUILD_NUMBER}
-          '''
+          """
         }
       }
     }
