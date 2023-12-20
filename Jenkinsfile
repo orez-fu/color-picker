@@ -51,12 +51,12 @@ pipeline {
         sh '''
           ls -al
           echo "Starting to build docker image"
-          docker build -t <docker_account>/color-picker:dev-${BUILD_NUMBER} -f docker/Dockerfile .
+          docker build -t orezfu/color-picker:dev-${BUILD_NUMBER} -f docker/Dockerfile .
         '''
         withCredentials([usernamePassword(credentialsId: 'docker_cred', usernameVariable: "DOCKER_USERNAME", passwordVariable: "DOCKER_PASSWORD")]) {
           sh """
             echo "${DOCKER_PASSWORD}" | docker login -u ${DOCKER_USERNAME} --password-stdin
-            docker push <docker_account>/color-picker:dev-${BUILD_NUMBER}
+            docker push orezfu/color-picker:dev-${BUILD_NUMBER}
           """
         }
       }
@@ -65,11 +65,10 @@ pipeline {
     stage ('Deploy application') {
       steps {
         sh "echo 'Deploy to kubernetes'"
-        // withKubeConfig([credentialsId: 'kubeconfig', serverUrl: 'https://<kubernetes_instance_public_ip>:6443']) {
-        withKubeConfig([credentialsId: 'kubeconfig', serverUrl: 'https://<kubernetes_instance_public_ip>:6443']) {
+        withKubeConfig([credentialsId: 'kubeconfig', serverUrl: 'https://18.227.209.62:6443']) {
           sh """
             kubectl apply -f manifests
-            kubectl set image deploy color-picker colorpicker=<docker_account>/color-picker:dev-${BUILD_NUMBER}
+            kubectl set image deploy color-picker colorpicker=orezfu/color-picker:dev-${BUILD_NUMBER}
           """
         }
       }
