@@ -65,8 +65,7 @@ pipeline {
     stage ('Deploy application') {
       steps {
         sh "echo 'Deploy to kubernetes'"
-        // withKubeConfig([credentialsId: 'kubeconfig', serverUrl: 'https://<kubernetes_instance_public_ip>:6443']) {
-        withKubeConfig([credentialsId: 'kubeconfig', serverUrl: 'https://54.165.88.14:6443']) {
+        withKubeConfig([credentialsId: 'kubeconfig', serverUrl: 'https://<kubernetes_instance_public_ip>:6443']) {
           sh """
             kubectl apply -f manifests
             kubectl set image deploy color-picker colorpicker=color-picker:dev-${BUILD_NUMBER}
